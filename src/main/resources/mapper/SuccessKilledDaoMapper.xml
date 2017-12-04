@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hbzz.dao.SuccessKilledDao">
+    <!--主键冲突（重复），报错 ingnot忽略错误返回0，可以帮我们过滤重复，-->
+    <insert id="insertSuccessKilled">
+        insert ignore INTO success_killed(seckill_id,user_phone,state )
+        values ( #{seckillId}, #{userPhone},0)
+    </insert>
+
+
+    <select id="queryByIdWithSeckill" resultType="SuccessKilled">
+    <!-- 根据id查询SuccessKilled并携带秒杀产品对象实例
+
+    left join(左联接) 返回包括左表中的所有记录和右表中联结字段相等的记录
+    right join(右联接) 返回包括右表中的所有记录和左表中联结字段相等的记录
+    inner join(等值连接) 只返回两个表中联结字段相等的行
+    -->
+    <!-- 如何告诉Mybatis把结果映射到SuccessKilled同时映射seckill属性 -->
+    <!-- 核心 自由控制SQL -->
+      SELECT
+        sk.seckill_id,
+        sk.user_phone,
+        sk.state,
+        s.seckill_id "seckill.seckill_id",
+        s.name "seckill.name",
+        s.number "seckill.number",
+        s.start_time "seckill.start_time",
+        s.end_time "seckill.end_time",
+        s.create_time "seckill.create_time"
+
+        FROM success_killed sk
+        INNER JOIN seckill s on sk.seckill_id=s.seckill_id
+        WHERE sk.seckill_id=#{seckillId} and sk.user_phone=#{userPhone}
+
+    </select>
+</mapper>
